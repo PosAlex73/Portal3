@@ -54,6 +54,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Order::class)]
     private Collection $orders;
 
+    #[ORM\Column(length: 255)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lastname = null;
+
+    #[ORM\Column(length: 1)]
+    private ?string $status = null;
+
+    #[ORM\Column(length: 1)]
+    private ?string $type = null;
+
+    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    private ?UserSettings $userSettings = null;
+
     public function __construct()
     {
         $this->userLinks = new ArrayCollection();
@@ -349,6 +364,76 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $order->setUserId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(string $firstname): self
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getUserSettings(): ?UserSettings
+    {
+        return $this->userSettings;
+    }
+
+    public function setUserSettings(?UserSettings $userSettings): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($userSettings === null && $this->userSettings !== null) {
+            $this->userSettings->setUserId(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($userSettings !== null && $userSettings->getUserId() !== $this) {
+            $userSettings->setUserId($this);
+        }
+
+        $this->userSettings = $userSettings;
 
         return $this;
     }

@@ -421,15 +421,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->userSettings;
     }
 
-    public function setUserSettings(?UserSettings $userSettings): self
+    public function setUserSettings(UserSettings $userSettings): self
     {
-        // unset the owning side of the relation if necessary
-        if ($userSettings === null && $this->userSettings !== null) {
-            $this->userSettings->setUserId(null);
-        }
-
         // set the owning side of the relation if necessary
-        if ($userSettings !== null && $userSettings->getUserId() !== $this) {
+        if ($userSettings->getUserId() !== $this) {
             $userSettings->setUserId($this);
         }
 

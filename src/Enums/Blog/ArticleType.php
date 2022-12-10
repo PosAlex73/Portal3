@@ -9,4 +9,9 @@ class ArticleType
     use Enumable;
 
     public const COMMON = 'C';
+
+    public static function getLabel()
+    {
+        return 'article_type_';
+    }
 }

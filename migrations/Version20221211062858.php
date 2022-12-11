@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20221209191007 extends AbstractMigration
+final class Version20221211062858 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,9 +20,11 @@ final class Version20221209191007 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE SEQUENCE app_new_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE article_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE article_comment_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE catetory_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE change_log_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE course_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE course_comment_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE "order_id_seq" INCREMENT BY 1 MINVALUE 1 START 1');
@@ -34,11 +36,14 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE user_links_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE user_profile_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE user_progress_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE user_settings_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE TABLE app_new (id INT NOT NULL, title VARCHAR(255) NOT NULL, text TEXT NOT NULL, status VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE article (id INT NOT NULL, title VARCHAR(255) NOT NULL, text TEXT NOT NULL, status VARCHAR(1) NOT NULL, type VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE article_comment (id INT NOT NULL, user_id_id INT NOT NULL, article_id INT NOT NULL, message VARCHAR(1024) NOT NULL, status VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_79A616DB9D86650F ON article_comment (user_id_id)');
         $this->addSql('CREATE INDEX IDX_79A616DB7294869C ON article_comment (article_id)');
         $this->addSql('CREATE TABLE catetory (id INT NOT NULL, title VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, status VARCHAR(1) NOT NULL, type VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE change_log (id INT NOT NULL, title VARCHAR(255) NOT NULL, text TEXT NOT NULL, status VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, release VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE course (id INT NOT NULL, title VARCHAR(255) NOT NULL, description TEXT NOT NULL, status VARCHAR(1) NOT NULL, type VARCHAR(1) NOT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE course_catetory (course_id INT NOT NULL, catetory_id INT NOT NULL, PRIMARY KEY(course_id, catetory_id))');
         $this->addSql('CREATE INDEX IDX_ED548CE6591CC992 ON course_catetory (course_id)');
@@ -64,6 +69,8 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('CREATE TABLE user_progress (id INT NOT NULL, user_id_id INT NOT NULL, course_id INT NOT NULL, data TEXT DEFAULT NULL, created TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_C28C16469D86650F ON user_progress (user_id_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_C28C1646591CC992 ON user_progress (course_id)');
+        $this->addSql('CREATE TABLE user_settings (id INT NOT NULL, user_id_id INT NOT NULL, get_admin_notifications VARCHAR(1) NOT NULL, get_news_notifications VARCHAR(1) NOT NULL, show_progress VARCHAR(1) NOT NULL, show_public_profile VARCHAR(1) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_5C844C59D86650F ON user_settings (user_id_id)');
         $this->addSql('CREATE TABLE messenger_messages (id BIGSERIAL NOT NULL, body TEXT NOT NULL, headers TEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, available_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, delivered_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_75EA56E0FB7336F0 ON messenger_messages (queue_name)');
         $this->addSql('CREATE INDEX IDX_75EA56E0E3BD61CE ON messenger_messages (available_at)');
@@ -90,15 +97,18 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('ALTER TABLE user_profile ADD CONSTRAINT FK_D95AB4059D86650F FOREIGN KEY (user_id_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_progress ADD CONSTRAINT FK_C28C16469D86650F FOREIGN KEY (user_id_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_progress ADD CONSTRAINT FK_C28C1646591CC992 FOREIGN KEY (course_id) REFERENCES course (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE user_settings ADD CONSTRAINT FK_5C844C59D86650F FOREIGN KEY (user_id_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
+        $this->addSql('DROP SEQUENCE app_new_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE article_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE article_comment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE catetory_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE change_log_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE course_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE course_comment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE "order_id_seq" CASCADE');
@@ -110,6 +120,7 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('DROP SEQUENCE user_links_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE user_profile_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE user_progress_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE user_settings_id_seq CASCADE');
         $this->addSql('ALTER TABLE article_comment DROP CONSTRAINT FK_79A616DB9D86650F');
         $this->addSql('ALTER TABLE article_comment DROP CONSTRAINT FK_79A616DB7294869C');
         $this->addSql('ALTER TABLE course_catetory DROP CONSTRAINT FK_ED548CE6591CC992');
@@ -124,9 +135,12 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('ALTER TABLE user_profile DROP CONSTRAINT FK_D95AB4059D86650F');
         $this->addSql('ALTER TABLE user_progress DROP CONSTRAINT FK_C28C16469D86650F');
         $this->addSql('ALTER TABLE user_progress DROP CONSTRAINT FK_C28C1646591CC992');
+        $this->addSql('ALTER TABLE user_settings DROP CONSTRAINT FK_5C844C59D86650F');
+        $this->addSql('DROP TABLE app_new');
         $this->addSql('DROP TABLE article');
         $this->addSql('DROP TABLE article_comment');
         $this->addSql('DROP TABLE catetory');
+        $this->addSql('DROP TABLE change_log');
         $this->addSql('DROP TABLE course');
         $this->addSql('DROP TABLE course_catetory');
         $this->addSql('DROP TABLE course_comment');
@@ -139,6 +153,7 @@ final class Version20221209191007 extends AbstractMigration
         $this->addSql('DROP TABLE user_links');
         $this->addSql('DROP TABLE user_profile');
         $this->addSql('DROP TABLE user_progress');
+        $this->addSql('DROP TABLE user_settings');
         $this->addSql('DROP TABLE messenger_messages');
     }
 }

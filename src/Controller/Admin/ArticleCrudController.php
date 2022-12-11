@@ -39,11 +39,13 @@ class ArticleCrudController extends AbstractCrudController
             ChoiceField::new('type')->setChoices(
                 ArticleType::getWithLabel()
             ),
-
-            FormField::addTab(t('comments')),
-            AssociationField::new('articleComments')
-                ->setCrudController(ArticleCommentCrudController::class)
         ];
+
+        if ($pageName === Crud::PAGE_EDIT || $pageName === Crud::PAGE_DETAIL) {
+            $fields[] = FormField::addTab(t('comments'));
+            $fields[] = AssociationField::new('articleComments')
+                ->setCrudController(ArticleCommentCrudController::class);
+        }
 
         return $fields;
     }

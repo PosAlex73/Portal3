@@ -1,0 +1,6 @@
+services:
+  App\EventListener\UserCreator:
+    tags:
+      name: 'doctrine.orm.entity_listener'
+      event: 'postCreate'
+      entity: 'App\Entity\User'
